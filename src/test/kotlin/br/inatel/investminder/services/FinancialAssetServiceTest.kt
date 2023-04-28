@@ -126,6 +126,7 @@ class FinancialAssetServiceTest() {
                 updateAt = date
         )
 
+        `when`(financialAssetRepository.existsById(anyLong())).thenReturn(true)
         `when`(financialAssetRepository.findById(anyLong())).thenReturn(Optional.of(assetResponse))
 
         val actual: Optional<FinancialAsset> = financialAssetService.getAssetById(assetResponse.id!!)
@@ -136,16 +137,16 @@ class FinancialAssetServiceTest() {
     }
 
     @Test
-    fun `should return a empty optional`() {
-        val assetResponse = Optional.empty<FinancialAsset>()
+    fun `should throw a FinancialAssetNotFoundException when try to get a asset by id`() {
+        val id = Random().nextLong()
 
-        `when`(financialAssetRepository.findById(anyLong())).thenReturn(assetResponse)
+        `when`(financialAssetRepository.existsById(id)).thenReturn(false)
 
-        val actual: Optional<FinancialAsset> = financialAssetService.getAssetById(Random().nextInt())
+        assertThrows<FinancialAssetNotFoundException> {
+            financialAssetService.getAssetById(id.toInt())
+        }
 
-        verify(financialAssetRepository, times(1)).findById(anyLong())
-
-        assertEquals(assetResponse, actual)
+        verify(financialAssetRepository, times(0)).findById(anyLong())
     }
 
     @Test

@@ -26,6 +26,9 @@ class FinancialAssetService(private val financialAssetRepository: FinancialAsset
     }
 
     fun getAssetById(id: Int): Optional<FinancialAsset> {
+        if (!financialAssetRepository.existsById(id.toLong())) {
+            throw FinancialAssetNotFoundException()
+        }
         return financialAssetRepository.findById(id.toLong())
     }
 

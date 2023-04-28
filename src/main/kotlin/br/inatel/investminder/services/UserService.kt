@@ -2,6 +2,8 @@ package br.inatel.investminder.services
 
 import br.inatel.investminder.controllers.dtos.request.CreateUserRequestDTO
 import br.inatel.investminder.entities.User
+import br.inatel.investminder.exceptions.AccountAlreadyExistException
+import br.inatel.investminder.exceptions.CreateAccountException
 import br.inatel.investminder.repositories.UserRepository
 import org.springframework.stereotype.Service
 import java.util.Base64
@@ -12,24 +14,24 @@ class UserService(private val userRepository: UserRepository) {
     fun createUser(createUserRequestDTO: CreateUserRequestDTO): User {
 
         if (!validateEmail(createUserRequestDTO.email)) {
-            throw Exception("Invalid email")
+            throw CreateAccountException("Invalid email")
         }
 
         if (createUserRequestDTO.password != createUserRequestDTO.passwordConfirmation) {
-            throw Exception("Password and password confirmation must be the same")
+            throw CreateAccountException("Password and password confirmation must be the same")
         }
 
         if (!validatePassword(createUserRequestDTO.password)) {
-            throw Exception("Password must have at least 6 characters")
+            throw CreateAccountException("Password must have at least 6 characters")
         }
 
         createUserRequestDTO.cpf.replace(".", "").replace("-", "")
         if (!validateCpf(createUserRequestDTO.cpf)) {
-            throw Exception("Invalid CPF")
+            throw CreateAccountException("Invalid CPF")
         }
 
         if (userRepository.findByEmail(createUserRequestDTO.email) != null) {
-            throw Exception("Email already exists")
+            throw AccountAlreadyExistException("Email already exists")
         }
 
         val user = User(

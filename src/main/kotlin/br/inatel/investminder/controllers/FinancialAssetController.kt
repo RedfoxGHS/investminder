@@ -33,12 +33,7 @@ class FinancialAssetController(
 
     @GetMapping("/{id}")
     fun getAssetById(@PathVariable id: Int): ResponseEntity<FinancialAsset> {
-        val asset: Optional<FinancialAsset> = financialAssetService.getAssetById(id)
-        return if (!asset.isPresent) {
-            ResponseEntity.notFound().build()
-        } else {
-            ResponseEntity.ok(asset.get())
-        }
+        return ResponseEntity.ok(financialAssetService.getAssetById(id).get())
     }
 
     @GetMapping("/name/{name}")
