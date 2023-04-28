@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -47,5 +48,10 @@ class FinancialAssetController(
     @GetMapping("/type/{type}")
     fun getAssetByType(@PathVariable type: String): ResponseEntity<List<FinancialAsset>> {
         return ResponseEntity.ok(financialAssetService.getAssetByType(type))
+    }
+
+    @PutMapping("/{id}")
+    fun updateAssetById(@PathVariable id: Int, @RequestBody financialAssetRequestDTO: FinancialAssetRequestDTO): ResponseEntity<FinancialAsset> {
+        return ResponseEntity.ok(financialAssetService.updateAssetById(id, financialAssetRequestDTO))
     }
 }

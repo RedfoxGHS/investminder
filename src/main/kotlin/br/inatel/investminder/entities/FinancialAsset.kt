@@ -8,15 +8,15 @@ import java.time.LocalDateTime
 
 @Entity
 class FinancialAsset(
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int? = null,
-    val name: String,
-    val type: String,
-    val price: Double,
-    val company: String,
-    val createdAt: LocalDateTime = LocalDateTime.now(),
-    val updateAt: LocalDateTime = LocalDateTime.now()
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        val id: Int? = null,
+        var name: String,
+        var type: String,
+        var price: Double,
+        var company: String,
+        var createdAt: LocalDateTime = LocalDateTime.now(),
+        var updateAt: LocalDateTime = LocalDateTime.now()
 ) {
     override fun toString(): String {
         return "FinancialAsset(id=$id, name='$name', type='$type', price=$price, company='$company', createdAt=$createdAt, updateAt=$updateAt)"

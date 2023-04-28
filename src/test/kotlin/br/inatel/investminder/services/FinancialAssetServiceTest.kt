@@ -4,6 +4,7 @@ import br.inatel.investminder.controllers.dtos.request.FinancialAssetRequestDTO
 import br.inatel.investminder.entities.FinancialAsset
 import br.inatel.investminder.repositories.FinancialAssetRepository
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
@@ -223,6 +224,50 @@ class FinancialAssetServiceTest() {
         verify(financialAssetRepository, times(1)).findByType(anyString())
 
         assertEquals(assetList, actual)
+    }
+
+    @Test
+    fun `should return a empty list of assets by type`() {
+        val assetList = listOf<FinancialAsset>()
+
+        `when`(financialAssetRepository.findByType(anyString())).thenReturn(assetList)
+
+        val actual: List<FinancialAsset> = financialAssetService.getAssetByType("Teste")
+
+        verify(financialAssetRepository, times(1)).findByType(anyString())
+
+        assertEquals(assetList, actual)
+    }
+
+    @Test
+    fun `should update a financial asset by id`() {
+        val date = LocalDateTime.now().minusDays(1)
+        val assetRequest = FinancialAssetRequestDTO(
+                name = "Teste",
+                type = "Teste",
+                price = 10.0,
+                company = "Teste"
+        )
+        val expected = FinancialAsset(
+                id = Random().nextInt(),
+                name = "Teste",
+                type = "Teste",
+                price = 10.0,
+                company = "Teste",
+                createdAt = date,
+                updateAt = date
+        )
+
+        `when`(financialAssetRepository.findById(anyLong())).thenReturn(Optional.of(expected))
+        `when`(financialAssetRepository.save(any(FinancialAsset::class.java))).thenReturn(expected)
+
+        val actual: FinancialAsset = financialAssetService.updateAssetById(expected.id!!, assetRequest)
+
+        verify(financialAssetRepository, times(1)).findById(anyLong())
+        verify(financialAssetRepository, times(1)).save(any(FinancialAsset::class.java))
+
+        assertEquals(expected, actual)
+        assertNotEquals(expected.createdAt, actual.updateAt)
     }
 
 }
