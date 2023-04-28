@@ -2,6 +2,7 @@ package br.inatel.investminder.services
 
 import br.inatel.investminder.controllers.dtos.request.FinancialAssetRequestDTO
 import br.inatel.investminder.entities.FinancialAsset
+import br.inatel.investminder.exceptions.FinancialAssetNotFoundException
 import br.inatel.investminder.repositories.FinancialAssetRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -48,7 +49,7 @@ class FinancialAssetService(private val financialAssetRepository: FinancialAsset
         var financialAssetFound: Optional<FinancialAsset> = financialAssetRepository.findById(id.toLong())
 
         if (!financialAssetFound.isPresent) {
-            throw Exception("Asset not found")
+            throw FinancialAssetNotFoundException()
         }
 
         financialAssetFound.get().name = financialAsset.name
@@ -57,5 +58,15 @@ class FinancialAssetService(private val financialAssetRepository: FinancialAsset
         financialAssetFound.get().company = financialAsset.company
         financialAssetFound.get().updateAt = LocalDateTime.now()
         return financialAssetRepository.save(financialAssetFound.get())
+    }
+
+    fun deleteAssetById(id: Int) {
+        var financialAssetFound: Optional<FinancialAsset> = financialAssetRepository.findById(id.toLong())
+
+        if (!financialAssetFound.isPresent) {
+            throw FinancialAssetNotFoundException()
+        }
+
+        financialAssetRepository.deleteById(id.toLong())
     }
 }

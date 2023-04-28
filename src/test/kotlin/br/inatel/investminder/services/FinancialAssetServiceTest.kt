@@ -2,11 +2,12 @@ package br.inatel.investminder.services
 
 import br.inatel.investminder.controllers.dtos.request.FinancialAssetRequestDTO
 import br.inatel.investminder.entities.FinancialAsset
+import br.inatel.investminder.exceptions.FinancialAssetNotFoundException
 import br.inatel.investminder.repositories.FinancialAssetRepository
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.springframework.boot.test.context.SpringBootTest
@@ -270,4 +271,46 @@ class FinancialAssetServiceTest() {
         assertNotEquals(expected.createdAt, actual.updateAt)
     }
 
+    @Test
+    fun `should throw a exception when try to update a financial asset by id`() {
+        val assetRequest = FinancialAssetRequestDTO(
+                name = "Teste",
+                type = "Teste",
+                price = 10.0,
+                company = "Teste"
+        )
+
+        `when`(financialAssetRepository.findById(anyLong())).thenReturn(Optional.empty())
+
+        var exception = assertThrows<FinancialAssetNotFoundException> {
+            financialAssetService.updateAssetById(Random().nextInt(), assetRequest)
+        }
+
+        verify(financialAssetRepository, times(1)).findById(anyLong())
+        verify(financialAssetRepository, times(0)).save(any(FinancialAsset::class.java))
+
+        assertEquals("Financial asset not found", exception.message)
+    }
+
+    @Test
+    fun `should delete a financial asset by id`() {
+        val date = LocalDateTime.now()
+        val assetResponse = FinancialAsset(
+                id = Random().nextInt(),
+                name = "Teste",
+                type = "Teste",
+                price = 10.0,
+                company = "Teste",
+                createdAt = date,
+                updateAt = date
+        )
+
+        `when`(financialAssetRepository.findById(anyLong())).thenReturn(Optional.of(assetResponse))
+        doNothing().`when`(financialAssetRepository).deleteById(anyLong())
+
+        financialAssetService.deleteAssetById(assetResponse.id!!)
+
+        verify(financialAssetRepository, times(1)).findById(anyLong())
+        verify(financialAssetRepository, times(1)).deleteById(anyLong())
+    }
 }
