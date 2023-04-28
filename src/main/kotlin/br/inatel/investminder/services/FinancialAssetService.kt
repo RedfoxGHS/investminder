@@ -17,4 +17,8 @@ class FinancialAssetService(private val financialAssetRepository: FinancialAsset
         )
         return financialAssetRepository.save(financialAsset)
     }
+
+    fun getAllAssets(): List<FinancialAsset> {
+        return financialAssetRepository.findAll()
+    }
 }

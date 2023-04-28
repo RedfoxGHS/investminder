@@ -36,7 +36,7 @@ class FinancialAssetServiceTest() {
 
         val date = LocalDateTime.now()
         val assetResponse = FinancialAsset(
-            id = Random().nextLong(),
+            id = Random().nextInt(),
             name = "Teste",
             type = "Teste",
             price = 10.0,
@@ -53,4 +53,49 @@ class FinancialAssetServiceTest() {
 
         assertEquals(assetResponse, actual)
     }
+
+    @Test
+    fun `should return a list of assets`() {
+        val date = LocalDateTime.now()
+        val assetResponse = FinancialAsset(
+                id = Random().nextInt(),
+                name = "Teste",
+                type = "Teste",
+                price = 10.0,
+                company = "Teste",
+                createdAt = date,
+                updateAt = date
+        )
+        val assetResponse2 = FinancialAsset(
+                id = Random().nextInt(),
+                name = "Teste2",
+                type = "Teste2",
+                price = 10.0,
+                company = "Teste2",
+                createdAt = date,
+                updateAt = date
+        )
+        val assetResponse3 = FinancialAsset(
+                id = Random().nextInt(),
+                name = "Teste3",
+                type = "Teste3",
+                price = 10.0,
+                company = "Teste3",
+                createdAt = date,
+                updateAt = date
+        )
+
+        val assetList = listOf(assetResponse, assetResponse2, assetResponse3)
+
+        `when`(financialAssetRepository.findAll()).thenReturn(assetList)
+
+        val actual: List<FinancialAsset> = financialAssetService.getAllAssets()
+
+        verify(financialAssetRepository, times(1)).findAll()
+
+        assertEquals(assetList.size, actual.size)
+        assertEquals(assetList, actual)
+    }
+
+
 }
