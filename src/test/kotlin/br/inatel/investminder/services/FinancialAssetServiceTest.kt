@@ -179,4 +179,50 @@ class FinancialAssetServiceTest() {
         assertEquals(assetList, actual)
     }
 
+    @Test
+    fun `should return a empty list of assets by name`() {
+        val assetList = listOf<FinancialAsset>()
+
+        `when`(financialAssetRepository.findByNameContaining(anyString())).thenReturn(assetList)
+
+        val actual: List<FinancialAsset> = financialAssetService.getAssetByName("Teste")
+
+        verify(financialAssetRepository, times(1)).findByNameContaining(anyString())
+
+        assertEquals(assetList, actual)
+    }
+
+    @Test
+    fun `should return a financial asset by type`() {
+        val date = LocalDateTime.now()
+        val assetResponse1 = FinancialAsset(
+                id = Random().nextInt(),
+                name = "Teste",
+                type = "Teste",
+                price = 10.0,
+                company = "Teste",
+                createdAt = date,
+                updateAt = date
+        )
+        val assetResponse2 = FinancialAsset(
+                id = Random().nextInt(),
+                name = "Teste2",
+                type = "Teste2",
+                price = 10.0,
+                company = "Teste2",
+                createdAt = date,
+                updateAt = date
+        )
+
+        val assetList = listOf(assetResponse1, assetResponse2)
+
+        `when`(financialAssetRepository.findByType(anyString())).thenReturn(assetList)
+
+        val actual: List<FinancialAsset> = financialAssetService.getAssetByType("Teste")
+
+        verify(financialAssetRepository, times(1)).findByType(anyString())
+
+        assertEquals(assetList, actual)
+    }
+
 }

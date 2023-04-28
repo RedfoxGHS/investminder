@@ -8,4 +8,6 @@ import java.util.Optional
 @Repository
 interface FinancialAssetRepository : JpaRepository<FinancialAsset, Long> {
     fun findByNameContaining(name: String): List<FinancialAsset>
+
+    fun findByType(type: String): List<FinancialAsset>
 }

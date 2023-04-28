@@ -30,4 +30,8 @@ class FinancialAssetService(private val financialAssetRepository: FinancialAsset
     fun getAssetByName(name: String): List<FinancialAsset> {
         return financialAssetRepository.findByNameContaining(name)
     }
+
+    fun getAssetByType(type: String): List<FinancialAsset> {
+        return financialAssetRepository.findByType(type)
+    }
 }

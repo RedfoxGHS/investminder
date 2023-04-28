@@ -42,6 +42,10 @@ class FinancialAssetController(
     @GetMapping("/name/{name}")
     fun getAssetByName(@PathVariable name: String): ResponseEntity<List<FinancialAsset>> {
         return ResponseEntity.ok(financialAssetService.getAssetByName(name))
+    }
 
+    @GetMapping("/type/{type}")
+    fun getAssetByType(@PathVariable type: String): ResponseEntity<List<FinancialAsset>> {
+        return ResponseEntity.ok(financialAssetService.getAssetByType(type))
     }
 }
