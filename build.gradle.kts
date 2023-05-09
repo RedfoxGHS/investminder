@@ -11,7 +11,6 @@ plugins {
 group = "br.inatel"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
-java.targetCompatibility = JavaVersion.VERSION_17
 
 repositories {
 	mavenCentral()
@@ -46,10 +45,4 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
-}
-
-tasks.jar {
-	manifest {
-		attributes["Main-Class"] = "br.inatel.investminder.InvestminderApplication"
-	}
 }
