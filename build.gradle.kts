@@ -50,6 +50,6 @@ tasks.withType<Test> {
 
 tasks.jar {
 	manifest {
-		attributes["Main-Class"] = "br.inatel.investminder.InvestminderApplicationKt"
+		attributes["Main-Class"] = "br.inatel.investminder.InvestminderApplication"
 	}
 }
