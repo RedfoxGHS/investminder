@@ -21,6 +21,7 @@ class FinancialAssetController(
         private val financialAssetService: FinancialAssetService,
 ) {
 
+    //Admin
     @PostMapping
     fun createAsset(@RequestBody financialAssetRequestDTO: FinancialAssetRequestDTO): ResponseEntity<FinancialAsset> {
         return ResponseEntity.status(HttpStatus.CREATED).body(financialAssetService.createAsset(financialAssetRequestDTO))
@@ -46,6 +47,7 @@ class FinancialAssetController(
         return ResponseEntity.ok(financialAssetService.getAssetByType(type))
     }
 
+    //Admin
     @PutMapping("/{id}")
     fun updateAssetById(@PathVariable id: Int, @RequestBody financialAssetRequestDTO: FinancialAssetRequestDTO): ResponseEntity<FinancialAsset> {
         return ResponseEntity.ok(financialAssetService.updateAssetById(id, financialAssetRequestDTO))

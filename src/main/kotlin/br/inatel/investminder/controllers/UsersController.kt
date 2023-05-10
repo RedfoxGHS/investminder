@@ -1,6 +1,7 @@
 package br.inatel.investminder.controllers
 
 import br.inatel.investminder.controllers.dtos.request.CreateUserRequestDTO
+import br.inatel.investminder.controllers.dtos.request.LoginResquestDTO
 import br.inatel.investminder.entities.User
 import br.inatel.investminder.services.UserService
 import org.springframework.http.HttpStatus
@@ -18,4 +19,10 @@ class UsersController(private val userService: UserService) {
     fun createUser(@RequestBody createUserRequestDTO: CreateUserRequestDTO): ResponseEntity<User> {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(createUserRequestDTO))
     }
+
+    @PostMapping("/login")
+    fun login(@RequestBody loginResquestDTO: LoginResquestDTO): ResponseEntity<User> {
+        return ResponseEntity.ok(userService.login(loginResquestDTO))
+    }
+
 }
