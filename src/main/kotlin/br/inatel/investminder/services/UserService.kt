@@ -43,6 +43,11 @@ class UserService(private val userRepository: UserRepository) {
         return userRepository.findById(userId.toInt()).orElseThrow { throw CreateAccountException("User not found") }
     }
 
+    fun getNameUserById(userId: Long): String {
+        val user = userRepository.findById(userId.toInt()).orElseThrow { throw CreateAccountException("User not found") }
+        return user.firstName
+    }
+
     private fun validateEmail(email: String): Boolean {
         return email.contains("@") && email.contains(".")
     }
