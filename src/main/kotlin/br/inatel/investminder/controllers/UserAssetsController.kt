@@ -23,7 +23,7 @@ class UserAssetsController(
         private val userAssetsService: UserAssetsService
 ) {
 
-    @PostMapping("buy")
+    @PostMapping("/buy")
     fun buyAsset(@RequestBody buyAssetsRequestDTO: BuyAssetsRequestDTO): ResponseEntity<UserAssets> {
         val buyAssetsResponse = userAssetsService.buyAsset(buyAssetsRequestDTO)
         return ResponseEntity(buyAssetsResponse, HttpStatus.CREATED)
@@ -31,7 +31,12 @@ class UserAssetsController(
 
     @GetMapping("/{id}")
     fun getAllAssetsUser(@PathVariable id: Long): ResponseEntity<List<UserAssets>> {
-        return ResponseEntity.ok(userAssetsService.getAllAssetsUser(id))
+        return ResponseEntity.ok(userAssetsService.getUserAssets(id))
+    }
+
+    @GetMapping("/balance-total/{id}")
+    fun getBalanceTotal(@PathVariable id: Long): ResponseEntity<Double> {
+        return ResponseEntity.ok(userAssetsService.getBalanceTotal(id))
     }
 
 }

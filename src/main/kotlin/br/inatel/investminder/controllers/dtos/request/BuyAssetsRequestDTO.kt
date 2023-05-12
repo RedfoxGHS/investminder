@@ -10,3 +10,15 @@ class BuyAssetsRequestDTO (
     var price: Double = 0.0,
     var fee: Double = 0.0
 )
+
+/*
+json
+{
+    "userId": 1,
+    "userAssetId": 1,
+    "financialAssetId": 1,
+    "quantity": 1,
+    "price": 1.0,
+    "fee": 1.0
+}
+ */

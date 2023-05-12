@@ -2,6 +2,7 @@ package br.inatel.investminder.services
 
 import br.inatel.investminder.controllers.dtos.request.BuyAssetsRequestDTO
 import br.inatel.investminder.entities.UserAssets
+import br.inatel.investminder.exceptions.AccountNotFoundException
 import br.inatel.investminder.repositories.UserAssetRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -36,58 +37,57 @@ class UserAssetsService(
     }
 
     fun buyExistingAsset(buyAssetsRequestDTO: BuyAssetsRequestDTO): UserAssets {
-        val userAsset = userAssetRepository.findById(buyAssetsRequestDTO.userAssetId.toLong())
+        val userAssetOptional = userAssetRepository.findById(buyAssetsRequestDTO.userAssetId.toLong())
+
+        if (!userAssetOptional.isPresent) {
+            throw  AccountNotFoundException("User asset not found")
+        }
+
+        val userAsset = userAssetOptional.get()
         val financialAsset = financialAssetService.getAssetById(buyAssetsRequestDTO.financialAssetId.toInt())
 
-        val userAssetUpdated = UserAssets(
-                id = userAsset.get().id,
-                userId = userAsset.get().userId,
-                financialAssetId = financialAsset.get().id!!.toLong(),
-                quantity = userAsset.get().quantity + buyAssetsRequestDTO.quantity,
-                totalSpend = userAsset.get().totalSpend + (buyAssetsRequestDTO.quantity * buyAssetsRequestDTO.price),
-                totalValue = calculateTotalValue(userAsset.get()) + (buyAssetsRequestDTO.quantity * buyAssetsRequestDTO.price),
-                totalProfit = calculateTotalProfit(userAsset.get()),
-                totalProfitPercent = calculateTotalProfitPercent(userAsset.get()),
-                createdAt = userAsset.get().createdAt,
-                updatedAt = LocalDateTime.now()
-        )
+        userAsset.quantity = userAsset.quantity + buyAssetsRequestDTO.quantity
+        userAsset.totalSpend = userAsset.totalSpend + (buyAssetsRequestDTO.quantity * buyAssetsRequestDTO.price)
+        userAsset.totalValue = financialAsset.get().price + (userAsset.quantity + buyAssetsRequestDTO.quantity)
+        userAsset.updatedAt = LocalDateTime.now()
+        userAsset.totalProfit = userAsset.totalValue - userAsset.totalSpend
+        userAsset.totalProfitPercent = (userAsset.totalProfit / userAsset.totalSpend) * 100
 
-        return userAssetRepository.save(userAssetUpdated)
+        return userAssetRepository.save(userAsset)
     }
 
     fun updateAssetById(id: Int): UserAssets {
-        val userAsset = userAssetRepository.findById(id.toLong())
+        val userAssetOptional = userAssetRepository.findById(id.toLong())
 
-        val userAssetUpdated = UserAssets(
-                id = userAsset.get().id,
-                userId = userAsset.get().userId,
-                financialAssetId = userAsset.get().financialAssetId,
-                quantity = userAsset.get().quantity,
-                totalSpend = userAsset.get().totalSpend,
-                totalValue = calculateTotalValue(userAsset.get()),
-                totalProfit = calculateTotalProfit(userAsset.get()),
-                totalProfitPercent = calculateTotalProfitPercent(userAsset.get()),
-                createdAt = userAsset.get().createdAt,
-                updatedAt = LocalDateTime.now()
-        )
+        if (!userAssetOptional.isPresent) {
+            throw  AccountNotFoundException("User asset not found")
+        }
 
-        return userAssetRepository.save(userAssetUpdated)
+        val userAsset = userAssetOptional.get()
+        val financialAsset = financialAssetService.getAssetById(id)
+
+        //TODO get the real price of the asset and update the totalValue
+        userAsset.totalValue = financialAsset.get().price + userAsset.quantity
+        userAsset.updatedAt = LocalDateTime.now()
+        userAsset.totalProfit = userAsset.totalValue - userAsset.totalSpend
+        userAsset.totalProfitPercent = (userAsset.totalProfit / userAsset.totalSpend) * 100
+
+        return userAssetRepository.save(userAsset)
     }
 
-    fun getAllAssetsUser(userId: Long): List<UserAssets> {
-        val assets = userAssetRepository.findByUserId(userId)
-        return assets.map { asset -> updateAssetById(asset.id.toInt()) }
-    }
-    private fun calculateTotalValue(userAsset: UserAssets): Double {
-        return userAsset.quantity * financialAssetService.getAssetById(userAsset.financialAssetId.toInt()).get().price
+    fun getUserAssets(userId: Long): List<UserAssets> {
+        return userAssetRepository.findByUserId(userId)
     }
 
-    private fun calculateTotalProfit(userAsset: UserAssets): Double {
-        return calculateTotalValue(userAsset) - userAsset.totalSpend
-    }
+    fun getBalanceTotal(userId: Long): Double {
+        val userAssets = userAssetRepository.findByUserId(userId)
+        var balanceTotal = 0.0
 
-    private fun calculateTotalProfitPercent(userAsset: UserAssets): Double {
-        return (calculateTotalProfit(userAsset) / userAsset.totalSpend) * 100
+        userAssets.forEach {
+            balanceTotal += it.totalValue
+        }
+
+        return balanceTotal
     }
 
 

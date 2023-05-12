@@ -1,5 +1,6 @@
 package br.inatel.investminder.entities
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -23,6 +24,7 @@ class User(
                 fetch = jakarta.persistence.FetchType.LAZY,
                 cascade = [CascadeType.PERSIST]
         )
+        @JsonBackReference
         var userAssets: MutableList<UserAssets> = mutableListOf()
 ) {
 

@@ -1,5 +1,6 @@
 package br.inatel.investminder.entities
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -24,5 +25,6 @@ class UserAssets (
         var updatedAt: LocalDateTime = LocalDateTime.now(),
         @ManyToOne
         @JoinColumn(name = "userId", referencedColumnName = "id", insertable = false, updatable = false)
+        @JsonBackReference
         var user: User? = null
 )
