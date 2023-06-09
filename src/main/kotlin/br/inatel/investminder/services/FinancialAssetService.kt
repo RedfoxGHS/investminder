@@ -1,5 +1,6 @@
 package br.inatel.investminder.services
 
+import br.inatel.investminder.controllers.dtos.request.BuyAssetsRequestDTO
 import br.inatel.investminder.controllers.dtos.request.FinancialAssetRequestDTO
 import br.inatel.investminder.entities.FinancialAsset
 import br.inatel.investminder.exceptions.FinancialAssetNotFoundException
@@ -49,7 +50,7 @@ class FinancialAssetService(private val financialAssetRepository: FinancialAsset
             company = financialAssetRequestDTO.company
         )
 
-        var financialAssetFound: Optional<FinancialAsset> = financialAssetRepository.findById(id.toLong())
+        val financialAssetFound: Optional<FinancialAsset> = financialAssetRepository.findById(id.toLong())
 
         if (!financialAssetFound.isPresent) {
             throw FinancialAssetNotFoundException()
@@ -64,7 +65,7 @@ class FinancialAssetService(private val financialAssetRepository: FinancialAsset
     }
 
     fun deleteAssetById(id: Int) {
-        var financialAssetFound: Optional<FinancialAsset> = financialAssetRepository.findById(id.toLong())
+        val financialAssetFound: Optional<FinancialAsset> = financialAssetRepository.findById(id.toLong())
 
         if (!financialAssetFound.isPresent) {
             throw FinancialAssetNotFoundException()
