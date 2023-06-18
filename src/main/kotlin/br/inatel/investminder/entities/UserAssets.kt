@@ -16,6 +16,7 @@ class UserAssets (
         var id: Long = 0,
         var userId: Long = 0,
         var financialAssetId: Long = 0,
+        var name: String = "",
         var quantity: Int = 0,
         var totalSpend: Double = 0.0,
         var totalValue: Double = 0.0,

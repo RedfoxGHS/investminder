@@ -16,17 +16,22 @@ class UserAssetsService(
 
     fun buyAsset(buyAssetsRequestDTO: BuyAssetsRequestDTO): UserAssets {
         val user = userService.findById(buyAssetsRequestDTO.userId)
-        val financialAsset = financialAssetService.getAssetById(buyAssetsRequestDTO.financialAssetId.toInt())
 
-        if (buyAssetsRequestDTO.userAssetId != 0L) {
-            return buyExistingAsset(buyAssetsRequestDTO)
+        val userAssets= userAssetRepository.findByFinancialAssetId(buyAssetsRequestDTO.financialAssetId)
+
+        if (userAssets != null) {
+            return buyExistingAsset(buyAssetsRequestDTO, userAssets)
         }
+
+        val financialAsset = financialAssetService.getAssetById(buyAssetsRequestDTO.financialAssetId.toInt())
 
         val userAsset = UserAssets(
                 userId = user.id!!.toLong(),
                 financialAssetId = financialAsset.get().id!!.toLong(),
+                name = financialAsset.get().name,
                 quantity = buyAssetsRequestDTO.quantity,
                 totalSpend = buyAssetsRequestDTO.quantity * buyAssetsRequestDTO.price,
+                totalValue = buyAssetsRequestDTO.price * buyAssetsRequestDTO.quantity,
                 totalProfit = 0.0,
                 totalProfitPercent = 0.0,
                 createdAt = LocalDateTime.now(),
@@ -36,22 +41,23 @@ class UserAssetsService(
         return userAssetRepository.save(userAsset)
     }
 
-    fun buyExistingAsset(buyAssetsRequestDTO: BuyAssetsRequestDTO): UserAssets {
-        val userAssetOptional = userAssetRepository.findById(buyAssetsRequestDTO.userAssetId.toLong())
+    fun buyExistingAsset(buyAssetsRequestDTO: BuyAssetsRequestDTO, userAsset: UserAssets): UserAssets {
 
-        if (!userAssetOptional.isPresent) {
-            throw  AccountNotFoundException("User asset not found")
-        }
-
-        val userAsset = userAssetOptional.get()
         val financialAsset = financialAssetService.getAssetById(buyAssetsRequestDTO.financialAssetId.toInt())
+
+        if (!financialAsset.isPresent) {
+            throw  AccountNotFoundException("Financial asset not found")
+        }
 
         userAsset.quantity = userAsset.quantity + buyAssetsRequestDTO.quantity
         userAsset.totalSpend = userAsset.totalSpend + (buyAssetsRequestDTO.quantity * buyAssetsRequestDTO.price)
-        userAsset.totalValue = financialAsset.get().price + (userAsset.quantity + buyAssetsRequestDTO.quantity)
+        userAsset.totalValue = buyAssetsRequestDTO.price * userAsset.quantity
         userAsset.updatedAt = LocalDateTime.now()
         userAsset.totalProfit = userAsset.totalValue - userAsset.totalSpend
         userAsset.totalProfitPercent = (userAsset.totalProfit / userAsset.totalSpend) * 100
+
+        financialAsset.get().price = buyAssetsRequestDTO.price
+        financialAssetService.update(financialAsset.get())
 
         return userAssetRepository.save(userAsset)
     }

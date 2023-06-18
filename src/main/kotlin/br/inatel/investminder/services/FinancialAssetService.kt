@@ -64,6 +64,10 @@ class FinancialAssetService(private val financialAssetRepository: FinancialAsset
         return financialAssetRepository.save(financialAssetFound.get())
     }
 
+    fun update(asset: FinancialAsset): FinancialAsset {
+        return financialAssetRepository.save(asset)
+    }
+
     fun deleteAssetById(id: Int) {
         val financialAssetFound: Optional<FinancialAsset> = financialAssetRepository.findById(id.toLong())
 
